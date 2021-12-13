@@ -50,17 +50,6 @@ namespace aoc.solvers
                         yield return _called[r, i];
                 }
 
-                IEnumerable<bool> Diag()
-                {
-                    for (int i = 0; i < 5; i++)
-                        yield return _called[i, i];
-                }
-                IEnumerable<bool> OffDiag()
-                {
-                    for (int i = 0; i < 5; i++)
-                        yield return _called[i, 4-i];
-                }
-
                 score = 0;
                 for (int i0 = 0; i0 < Board.GetLength(0); i0++)
                 for (int i1 = 0; i1 < Board.GetLength(1); i1++)

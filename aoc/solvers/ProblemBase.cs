@@ -12,7 +12,7 @@ namespace aoc.solvers
     {
         public Task ExecuteAsync(string type = "real")
         {
-            var m = Regex.Match(GetType().Name, @"Problem(\d)");
+            var m = Regex.Match(GetType().Name, @"Problem(\d+)$");
             var id = int.Parse(m.Groups[1].Value);
 
             return ExecuteCoreAsync(Data.GetData(id, type));

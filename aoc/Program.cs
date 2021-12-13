@@ -24,7 +24,7 @@ namespace aoc
             
             foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
             {
-                var match = Regex.Match(type.Name, @"Problem(\d)");
+                var match = Regex.Match(type.Name, @"Problem(\d+)");
                 if (match.Success)
                 {
                     problems.Add(int.Parse(match.Groups[1].Value), (ProblemBase)Activator.CreateInstance(type));

@@ -4,12 +4,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Reflection;
 using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text.RegularExpressions;
+using JetBrains.Annotations;
 
 namespace aoc
 {
@@ -24,18 +26,40 @@ namespace aoc
                 yield return line;
         }
 
-        public static async IAsyncEnumerable<ValueTuple<T1, T2, T3, T4>> As<T1, T2, T3, T4>(IAsyncEnumerable<string> data, string pattern)
+        public static async IAsyncEnumerable<ValueTuple<T1, T2, T3, T4>> As<T1, T2, T3, T4>(
+            IAsyncEnumerable<string> data,
+            [RegexPattern] string pattern)
         {
             await foreach (string line in data)
             {
-                var m = Regex.Match(line, pattern);
-                yield return (
-                    (T1)Convert.ChangeType(m.Groups[1].Value, typeof(T1)),
-                    (T2)Convert.ChangeType(m.Groups[2].Value, typeof(T2)),
-                    (T3)Convert.ChangeType(m.Groups[3].Value, typeof(T3)),
-                    (T4)Convert.ChangeType(m.Groups[4].Value, typeof(T4))
-                );
+                yield return Parse<T1, T2, T3, T4>(line, pattern);
             }
+        }
+
+        public static (T1, T2, T3, T4) Parse<T1, T2, T3, T4>(string line, [RegexPattern] string pattern)
+        {
+            var m = Regex.Match(line, pattern);
+            return (
+                (T1)Convert.ChangeType(m.Groups[1].Value, typeof(T1)),
+                (T2)Convert.ChangeType(m.Groups[2].Value, typeof(T2)),
+                (T3)Convert.ChangeType(m.Groups[3].Value, typeof(T3)),
+                (T4)Convert.ChangeType(m.Groups[4].Value, typeof(T4))
+            );
+        }
+
+        public static (T1, T2) Parse<T1, T2>(string line, [RegexPattern] string pattern)
+        {
+            var m = Regex.Match(line, pattern);
+            return (
+                (T1)Convert.ChangeType(m.Groups[1].Value, typeof(T1)),
+                (T2)Convert.ChangeType(m.Groups[2].Value, typeof(T2))
+            );
+        }
+
+        public static T1 Parse<T1>(string line, [RegexPattern] string pattern)
+        {
+            var m = Regex.Match(line, pattern);
+            return (T1)Convert.ChangeType(m.Groups[1].Value, typeof(T1));
         }
     }
 }

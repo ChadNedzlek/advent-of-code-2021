@@ -94,7 +94,7 @@ namespace aoc.solvers
             long val = 0;
             foreach (var c in line)
             {
-                val = val << 1 | (c == '1' ? 1 : 0);
+                val = val << 1 | (uint)(c == '1' ? 1 : 0);
             }
 
             return val;
