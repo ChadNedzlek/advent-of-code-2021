@@ -47,6 +47,16 @@ namespace aoc
             );
         }
 
+        public static (T1, T2, T3) Parse<T1, T2, T3>(string line, [RegexPattern] string pattern)
+        {
+            var m = Regex.Match(line, pattern);
+            return (
+                (T1)Convert.ChangeType(m.Groups[1].Value, typeof(T1)),
+                (T2)Convert.ChangeType(m.Groups[2].Value, typeof(T2)),
+                (T3)Convert.ChangeType(m.Groups[3].Value, typeof(T3))
+            );
+        }
+
         public static (T1, T2) Parse<T1, T2>(string line, [RegexPattern] string pattern)
         {
             var m = Regex.Match(line, pattern);

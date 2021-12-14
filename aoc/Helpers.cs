@@ -22,5 +22,21 @@ namespace aoc
         {
             return Enumerable.Repeat(value, 1);
         }
+
+        public static void AddOrUpdate<TKey, TValue>(
+            this IDictionary<TKey, TValue> dict,
+            TKey key,
+            TValue add,
+            Func<TValue, TValue> update)
+        {
+            if (dict.TryGetValue(key, out var existing))
+            {
+                dict[key] = update(existing);
+            }
+            else
+            {
+                dict.Add(key, add);
+            }
+        }
     }
 }
