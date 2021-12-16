@@ -88,9 +88,5 @@ namespace aoc.solvers
                 Console.WriteLine($"After 10 steps, {most} - {least} = {most - least}");
             }
         }
-
-        private void DumpPaper(bool[,] paper, int maxX, int maxY)
-        {
-        }
     }
 }

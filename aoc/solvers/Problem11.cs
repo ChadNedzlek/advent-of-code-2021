@@ -100,7 +100,7 @@ namespace aoc.solvers
                 sea = copy;
             }
             
-            Console.WriteLine($"{flashCount} flashes");
+            // Console.WriteLine($"{flashCount} flashes");
         }
     }
 }
