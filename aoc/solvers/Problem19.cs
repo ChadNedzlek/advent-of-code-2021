@@ -353,43 +353,37 @@ namespace aoc.solvers
                 coords.Clear();
             }
 
-            while (beacons.Count > 1)
+            var universe = beacons[0];
+            beacons.RemoveAt(0);
+            while (beacons.Count > 0)
             {
                 Console.WriteLine($"Current beacon count: {beacons.Count}");
-                MergeOneBeacon(beacons);
+                universe = MergeOneBeacon(universe, beacons);
             }
             
-            Console.WriteLine($"Merged all beacons, found {beacons[0].BeaconOffsets.Count} probes");
+            Console.WriteLine($"Merged all beacons, found {universe.BeaconOffsets.Count} probes");
 
-            var distances = from a in beacons[0].Probes
-                from b in beacons[0].Probes
+            var distances = from a in universe.Probes
+                from b in universe.Probes
                 where a != b
                 select a.Distance(b);
             
             Console.WriteLine($"Furthest distance: {distances.Max()}");
         }
 
-        private static void MergeOneBeacon(List<Beacon> beacons)
+        private static Beacon MergeOneBeacon(Beacon universe, List<Beacon> beacons)
         {
-            foreach (var a in beacons.OrderByDescending(x => x.Probes.Count))
+            foreach (var b in beacons)
             {
-                foreach (var b in beacons.OrderBy(x => x.Probes.Count))
+                for (int iRotation = 0; iRotation < Rotations.Count; iRotation++)
                 {
-                    if (a == b)
-                        continue;
-
-                    for (int iRotation = 0; iRotation < Rotations.Count; iRotation++)
+                    if (universe.TryMerge(b.Rotate(iRotation), out Beacon merged))
                     {
-                        if (a.TryMerge(b.Rotate(iRotation), out Beacon merged))
-                        {
-                            beacons.Remove(a);
-                            beacons.Remove(b);
-                            beacons.Add(merged);
+                        beacons.Remove(b);
 
-                            Console.WriteLine($"Merging {a.Name} into {b.Name} ");
+                        Console.WriteLine($"Merging {universe.Name} into {b.Name} ");
 
-                            return;
-                        }
+                        return merged;
                     }
                 }
             }
