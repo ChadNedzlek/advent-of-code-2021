@@ -57,5 +57,21 @@ namespace aoc
                 dict.Add(key, add);
             }
         }
+        
+        public static void Increment<TKey>(
+            this IDictionary<TKey, int> dict,
+            TKey key,
+            int amount = 1)
+        {
+            AddOrUpdate(dict, key, amount, i => i + amount);
+        }
+        
+        public static void Increment<TKey>(
+            this IDictionary<TKey, long> dict,
+            TKey key,
+            long amount = 1)
+        {
+            AddOrUpdate(dict, key, amount, i => i + amount);
+        }
     }
 }
