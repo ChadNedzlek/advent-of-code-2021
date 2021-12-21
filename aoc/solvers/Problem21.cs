@@ -57,8 +57,11 @@ namespace aoc.solvers
             {
                 playerPosition.Add(startingPosition);
             }
+            var initState = new GameState((byte)playerPosition[0], (byte)playerPosition[1], 0, 0, false);
             
             Dictionary<GameState, Wins> universe = new Dictionary<GameState, Wins>();
+            Stack<GameState> unresolved = new Stack<GameState>();
+            unresolved.Push(initState);
 
             const int winGoal = 21;
             Wins RunGame(GameState state)
@@ -71,36 +74,73 @@ namespace aoc.solvers
                     if (state.bScore >= winGoal)
                         return new Wins(0, 1);
 
+                    (byte move, int mult)[] moves = {
+                        (3, 1),
+                        (4, 3),
+                        (5, 6),
+                        (6, 7),
+                        (7, 6),
+                        (8, 3),
+                        (9, 1)
+                    };
+
+                    Wins RunTurn(Func<byte, GameState> makeMove)
+                    {
+                        var wins = new Wins(0, 0);
+                        List<GameState> need = new List<GameState>();
+                        foreach (var move in moves)
+                        {
+                            GameState nextState = makeMove(move.move);
+                            if (universe.TryGetValue(nextState, out var nextWins))
+                            {
+                                wins += nextWins * move.mult;
+                            }
+                            else
+                            {
+                                need.Add(nextState);
+                            }
+                        }
+
+                        if (need.Count == 0)
+                        {
+                            return wins;
+                        }
+
+                        unresolved.Push(inner);
+                        foreach (var n in need)
+                        {
+                            unresolved.Push(n);
+                        }
+
+                        return null;
+                    }
+
                     if (inner.bTurn)
                     {
-                        return RunGame(inner.MoveB(3)) +
-                            RunGame(inner.MoveB(4)) * 3 +
-                            RunGame(inner.MoveB(5)) * 6 +
-                            RunGame(inner.MoveB(6)) * 7 +
-                            RunGame(inner.MoveB(7)) * 6 +
-                            RunGame(inner.MoveB(8)) * 3 +
-                            RunGame(inner.MoveB(9));
+                        return RunTurn(inner.MoveB);
                     }
                     
-                    {
-                        return RunGame(inner.MoveA(3)) +
-                            RunGame(inner.MoveA(4)) * 3 +
-                            RunGame(inner.MoveA(5)) * 6 +
-                            RunGame(inner.MoveA(6)) * 7 +
-                            RunGame(inner.MoveA(7)) * 6 +
-                            RunGame(inner.MoveA(8)) * 3 +
-                            RunGame(inner.MoveA(9));
-                    }
+                    return RunTurn(inner.MoveA);
                 }
 
                 if (!universe.TryGetValue(state, out var result))
                 {
-                    universe.Add(state, result = Calc(state));
+                    Wins value = result = Calc(state);
+                    if (result != null)
+                    {
+                        universe.Add(state, value);
+                    }
                 }
                 return result;
             }
 
-            var result = RunGame(new GameState((byte)playerPosition[0], (byte)playerPosition[1], 0, 0, false));
+            while (unresolved.Count != 0)
+            {
+                RunGame(unresolved.Pop());
+            }
+            
+            Wins result = RunGame(initState);
+
             long best = Math.Max(result.a, result.b);
             long worst = Math.Min(result.a, result.b);
             Console.WriteLine($"Winner wins {best:N0} universes, loser in {worst:N0}, with {universe.Count:N0} states");
