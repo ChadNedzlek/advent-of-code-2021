@@ -36,6 +36,17 @@ namespace aoc
             }
         }
 
+
+        public static async IAsyncEnumerable<T1> As<T1>(
+            IAsyncEnumerable<string> data,
+            [RegexPattern] string pattern)
+        {
+            await foreach (string line in data)
+            {
+                yield return Parse<T1>(line, pattern);
+            }
+        }
+
         public static (T1, T2, T3, T4) Parse<T1, T2, T3, T4>(string line, [RegexPattern] string pattern)
         {
             var m = Regex.Match(line, pattern);
